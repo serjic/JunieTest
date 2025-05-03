@@ -10,6 +10,10 @@ plugins {
 dependencies {
   // Project "app" depends on project "utils". (Project paths are separated with ":", so ":utils" refers to the top-level "utils" project.)
   implementation(project(":utils"))
+
+  // Test dependencies
+  testImplementation("org.jetbrains.kotlin:kotlin-test")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 application {
