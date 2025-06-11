@@ -1,5 +1,7 @@
 package ogr.junie.app
 
+import java.util.Locale
+
 /**
  * Main entry point for the calculator application.
  * Provides a command line interface for the Calculator class.
@@ -7,17 +9,34 @@ package ogr.junie.app
 fun main(args: Array<String>) {
     val calculator = Calculator()
 
-    if (args.isEmpty()) {
-        println("Welcome to the Calculator App!")
-        println("Usage: Enter numbers separated by spaces to add them together.")
-        println("Enter 'exit' to quit.")
+    // Check for language option
+    var processedArgs = args
+    if (args.isNotEmpty() && args[0] == "--lang") {
+        if (args.size > 1) {
+            val lang = args[1]
+            when (lang.lowercase()) {
+                "de", "german" -> I18n.setLocale(Locale.GERMAN)
+                "en", "english" -> I18n.setLocale(Locale.ENGLISH)
+                else -> println("Unsupported language: $lang. Using default.")
+            }
+            processedArgs = if (args.size > 2) args.sliceArray(2 until args.size) else emptyArray()
+        } else {
+            println("Language option requires a parameter. Using default.")
+            processedArgs = emptyArray()
+        }
+    }
+
+    if (processedArgs.isEmpty()) {
+        println(I18n.getString("welcome"))
+        println(I18n.getString("usage"))
+        println(I18n.getString("exit_instruction"))
 
         while (true) {
             print("> ")
             val input = readLine() ?: ""
 
             if (input.trim().equals("exit", ignoreCase = true)) {
-                println("Goodbye!")
+                println(I18n.getString("goodbye"))
                 break
             }
 
@@ -28,24 +47,24 @@ fun main(args: Array<String>) {
                     .toIntArray()
 
                 if (numbers.isEmpty()) {
-                    println("Please enter at least one number.")
+                    println(I18n.getString("enter_number"))
                     continue
                 }
 
                 val result = calculator.add(*numbers)
-                println("Result: $result")
+                println(I18n.getString("result", result))
             } catch (e: NumberFormatException) {
-                println("Error: Please enter valid integers separated by spaces.")
+                println(I18n.getString("error_invalid_input"))
             }
         }
     } else {
         // If arguments are provided, calculate their sum
         try {
-            val numbers = args.map { it.toInt() }.toIntArray()
+            val numbers = processedArgs.map { it.toInt() }.toIntArray()
             val result = calculator.add(*numbers)
-            println("Result: $result")
+            println(I18n.getString("result", result))
         } catch (e: NumberFormatException) {
-            println("Error: Please provide valid integers as arguments.")
+            println(I18n.getString("error_invalid_args"))
         }
     }
 }
